@@ -1,0 +1,55 @@
+---
+title: "Taller_1"
+author: "Juan Pablo, Rodrigo, Alejandra"
+date: "7/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r mtcars}
+a = mtcars
+head(a)
+```
+
+Las variables a analizar son las siguientes:
+
+    mpg: Millas por galón de combustible
+    cyl: Número de cilindros
+    disp: Desplazamiento
+    hp: Caballos de potencia
+    drat: Relación del eje trasero
+    wt: Peso (1000 lbs)
+    qsec: Tiempo a 1/4 milla
+    vs: V/S
+    am: Transmisión (0 = automático, 1 = manual)
+    gear: Número de marchas adelante
+    carb: Número de carburadores
+    
+#### 1. Media, mediana, moda, desviación estándar.
+
+```{r}
+mean(a$mpg)
+median(a$mpg)
+```
+
+```{r}
+boxplot(a$wt)
+```
+
+```{r}
+x = a$mpg
+hist(x, breaks = seq(min(x), max(x), length.out = 5))
+```
+
+```{r}
+boxplot(a)
+```
+
+
+```{r}
+scatterplotMatrix(a, data = olive_acids, diagonal=list(method ="histogram"))
+```
