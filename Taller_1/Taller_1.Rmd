@@ -1,16 +1,53 @@
 ---
-title: "Taller_1"
+title: "Taller 1: Análisis Estadístico de Datos"
 author: "Juan Pablo, Rodrigo, Alejandra"
 date: "7/29/2021"
-output: html_document
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+fontsize: 14pt
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Cargue de paquetes.
 
-```{r mtcars}
+```{r, message = FALSE}
+
+packages = c("dslabs", "MASS", "scatterplot3d", "car", "ggplot2", "modeest", "reshape2", "aplpack")
+
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+```
+
+#### 1. Graficar los boxplots de la variable `oleic` vs `region` del dataset `olive`.
+
+```{r, message = FALSE}
+head(olive)
+
+```
+
+```{r, message=FALSE}
+ggplot(olive, aes(x=region, y=oleic, fill=region)) +
+  geom_boxplot()
+
+```
+
+
+#### 2. Datos extraídos de la revista Motor Trend 1974 de Estados Unidos, resume el consumo y 10 aspectos de diseño y rendimiento de 32 automóviles (modelos 1973-74).
+
+```{r, message = FALSE}
 a = mtcars
 head(a)
 ```
@@ -29,27 +66,147 @@ Las variables a analizar son las siguientes:
     gear: Número de marchas adelante
     carb: Número de carburadores
     
-#### 1. Media, mediana, moda, desviación estándar.
+2.1. Media, mediana, moda, desviación estándar de las variables de la base de datos `mtcars`.
 
-```{r}
-mean(a$mpg)
-median(a$mpg)
+
+```{r, message = FALSE}
+sapply(a, mean, na.rm = TRUE) #Media
+sapply(a, median, na.rm = TRUE) #Mediana
+sapply(a, mfv, na_rm = TRUE) #Moda
+sapply(a, sd, na.rm = TRUE) #Desviación estándar.
 ```
 
-```{r}
-boxplot(a$wt)
+2.2. Para conocer los valores extremos atípicos, graficamos en diagramas de cajas de todas las variables de la base de datos `mtcars`.
+
+```{r, message = FALSE}
+data_ <- melt(a)
+
+head(data_)
+
+ggplot(data_, aes(x = variable, y = value, color = variable)) + geom_boxplot()
 ```
 
-```{r}
+
+```{r, message = FALSE}
 x = a$mpg
-hist(x, breaks = seq(min(x), max(x), length.out = 5))
+
+hist(x, breaks = seq(min(x), max(x), length.out = 5, ))
+```
+
+Interquartile range (IQR)
+
+```{r}
+
+sapply(a, boxplot.stats)[4,]
+
+boxplot(a, plot=FALSE)$out
 ```
 
 ```{r}
-boxplot(a)
+
+scaled.dat <- scale(a)
+
+
+data_2 <- melt(scaled.dat)
+
+head(data_2)
+
+ggplot(data_2, aes(x = Var2, y = value, color = Var2)) + geom_boxplot()
+
 ```
 
 
 ```{r}
-scatterplotMatrix(a, data = olive_acids, diagonal=list(method ="histogram"))
+
+colors <- c("#999999", "#E69F00", "#56B4E9")
+colors <- colors[as.numeric(olive$region)]
+
+
+scatterplot3d(olive$palmitic,olive$palmitoleic,olive$stearic, pch = 16, color = colors,
+              xlab="palmitic", ylab="palmitoleic", zlab="stearic")
+
 ```
+
+
+```{r}
+scatterplotMatrix(~ +., data = olive[,3:5], diagonal=list(method ="boxplot"))
+
+```
+
+## Punto 5
+### a.
+```{r}
+x1 <- c(-6,-3,-2,1,2,5,6,8)
+x2 <- c(-2,-3,1,-1,2,1,5,3)
+X <- data.frame(cbind(x1,x2))
+ggplot(X, aes(x=x1, y=x2)) + geom_point()
+s11 <- cov(X)[1,1]
+s11
+s22 <- cov(X)[2,2]
+s22
+s12 <- cov(X)[1,2]
+s12
+
+```
+### b.
+```{r}
+th <- (26*pi)/180
+x1m <- x1*cos(th) + x2*sin(th)
+
+x2m <- -x1*sin(th) + x2*cos(th)
+
+
+Xm <- data.frame(cbind(x1m,x2m))
+
+Xm
+
+```
+### c
+```{r}
+s11m <- cov(Xm)[1,1]
+s11m
+s22m <- cov(Xm)[2,2]
+s22m
+
+```
+### d.
+```{r}
+X_1_2 <- c(4,-2)
+mat_rot <- matrix(c(cos(th), sin(th), -sin(th), cos(th)),ncol=2,nrow=2)
+P <- mat_rot %*% X_1_2
+x1m_d <- P[1]
+x1m_d
+x2m_d <- P[2]
+x2m_d
+
+d1 <- sqrt(((x1m_d)**2)/s11m + ((x2m_d)**2)/s22m)
+d1
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+#faces(Xm)[1:3]
+
+```
+
+
